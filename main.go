@@ -38,6 +38,8 @@ func main() {
 
 func startTree(nesting int) *exec.Cmd {
 	cmd := exec.Command(os.Args[0], "3tree", strconv.Itoa(nesting - 1))
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
 		log.Println("Start ERROR: %v", err)
 	}
