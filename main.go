@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	//"time"
+	"time"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -121,19 +121,26 @@ func main() {
 			panic(err)
 		}
 		//defer g.Dispose()
-		for i := 1; i < 100; i++ {
-			cmd1 := startTree(nesting)
-			if err := g.AddProcess(cmd1.Process); err != nil {
-				panic(err)
-			}
+		cmd1 := startTree(nesting)
+		cmd2 := startTree(nesting)
 
-			if err := cmd1.Wait(); err != nil {
-				log.Println("cmd1 wait ERROR: %v", err)
-			}
+		if err := g.AddProcess(cmd1.Process); err != nil {
+			panic(err)
 		}
+
+		if err := g.AddProcess(cmd1.Process); err != nil {
+			panic(err)
+		}
+		time.Sleep(2 * time.Second)
 
 		g.ListProcesses()
 
+		if err := cmd1.Wait(); err != nil {
+			log.Println("cmd1 wait ERROR: %v", err)
+		}
+		if err := cmd2.Wait(); err != nil {
+			log.Println("cmd2 wait ERROR: %v", err)
+		}
 	} else if nesting >= 1 {
 		cmd1 := startTree(nesting)
 		cmd2 := startTree(nesting)
@@ -145,5 +152,5 @@ func main() {
 			log.Println("cmd2 wait ERROR: %v", err)
 		}
 	}
-	//time.Sleep(500 * time.Millisecond)
+	time.Sleep(10 * time.Second)
 }
